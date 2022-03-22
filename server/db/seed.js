@@ -110,6 +110,16 @@ async function seed() {
 			password: '123456',
 			photoUrl:
 				'https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914466/messenger/9e2972c07afac45a8b03f5be3d0a796abe2e566e_ttq23y.png'
+		}),
+		User.create({
+			username: '1',
+			email: '1@email.com',
+			password: '123456'
+		}),
+		User.create({
+			username: '2',
+			email: '2@email.com',
+			password: '123456'
 		})
 	]);
 
