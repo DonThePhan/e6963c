@@ -116,6 +116,7 @@ const Home = ({ user, logout }) => {
 						convo.latestMessageText = message.text;
 					}
 				});
+				return newConversations;
 			});
 		},
 		[ setConversations ]
