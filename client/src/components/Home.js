@@ -65,6 +65,7 @@ const Home = ({ user, logout }) => {
 	const postMessage = async (body) => {
 		try {
 			const data = await saveMessage(body);
+			console.log(data);
 
 			if (!body.conversationId) {
 				addNewConvo(body.recipientId, data.message);
@@ -104,17 +105,20 @@ const Home = ({ user, logout }) => {
 				};
 				newConvo.latestMessageText = message.text;
 				setConversations((prev) => [ newConvo, ...prev ]);
+				console.log('setConversations');
 			}
 
-			conversations.forEach((convo) => {
-				if (convo.id === message.conversationId) {
-					convo.messages.push(message);
-					convo.latestMessageText = message.text;
-				}
+			setConversations((prevConvos) => {
+				const newConversations = JSON.parse(JSON.stringify(prevConvos));
+				newConversations.forEach((convo) => {
+					if (convo.id === message.conversationId) {
+						convo.messages.push(message);
+						convo.latestMessageText = message.text;
+					}
+				});
 			});
-			setConversations(conversations);
 		},
-		[ setConversations, conversations ]
+		[ setConversations ]
 	);
 
 	const setActiveChat = (username) => {
