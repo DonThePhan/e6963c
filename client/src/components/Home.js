@@ -109,18 +109,17 @@ const Home = ({ user, logout }) => {
 				console.log('setConversations');
 			}
 
-			setConversations((prevConvos) => {
-				const newConversations = JSON.parse(JSON.stringify(prevConvos));
-				newConversations.forEach((convo) => {
-					if (convo.id === message.conversationId) {
-						convo.messages.push(message);
-						convo.latestMessageText = message.text;
-					}
-				});
-				return newConversations;
+			const newConversations = conversations.slice();
+			newConversations.forEach((convo) => {
+				if (convo.id === message.conversationId) {
+					convo.messages.push(message);
+					convo.latestMessageText = message.text;
+				}
 			});
+
+			setConversations(newConversations);
 		},
-		[ setConversations ]
+		[ setConversations, conversations ]
 	);
 
 	const setActiveChat = (username) => {
