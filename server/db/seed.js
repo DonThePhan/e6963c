@@ -72,8 +72,9 @@ async function seed() {
 		user1Id: thomas.id
 	});
 
-	// for (let i = 0; i < 11; i++) {
-	for (let i = 0; i < 1; i++) {
+	// todo i = 1 introduced for development efficiency. Will remove on completion
+	for (let i = 0; i < 11; i++) {
+		// for (let i = 0; i < 1; i++) {
 		await Message.create({
 			conversationId: hualingConvo.id,
 			senderId: hualing.id,
