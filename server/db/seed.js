@@ -76,7 +76,9 @@ async function seed() {
 		user1Id: thomas.id
 	});
 
+	// todo i = 1 introduced for development efficiency. Will remove on completion
 	for (let i = 0; i < 11; i++) {
+		// for (let i = 0; i < 1; i++) {
 		await Message.create({
 			conversationId: hualingConvo.id,
 			senderId: hualing.id,
@@ -115,6 +117,16 @@ async function seed() {
 			password: '123456',
 			photoUrl:
 				'https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914466/messenger/9e2972c07afac45a8b03f5be3d0a796abe2e566e_ttq23y.png'
+		}),
+		User.create({
+			username: '1',
+			email: '1@email.com',
+			password: '123456'
+		}),
+		User.create({
+			username: '2',
+			email: '2@email.com',
+			password: '123456'
 		})
 	]);
 
@@ -129,12 +141,15 @@ async function runSeed() {
 		console.error(err);
 		process.exitCode = 1;
 	} finally {
-		console.log('closing db connection');
-		await db.close();
-		console.log('db connection closed');
+		// todo I've updated some of the Cypress tests to reset the db automatically when run, by making a request to the backend. We'll need these commented out so the db doesn't close which the requests are made. We can undo this once all issues are resolved. Hopefully this doesn't create more issues.
+		// console.log('closing db connection');
+		// await db.close();
+		// console.log('db connection closed');
 	}
 }
 
 if (module === require.main) {
 	runSeed();
 }
+
+module.exports = runSeed;
