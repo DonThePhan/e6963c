@@ -65,7 +65,6 @@ const Home = ({ user, logout }) => {
 	const postMessage = async (body) => {
 		try {
 			const data = await saveMessage(body);
-			console.log(data);
 
 			if (!body.conversationId) {
 				addNewConvo(body.recipientId, data.message);
@@ -109,7 +108,6 @@ const Home = ({ user, logout }) => {
 				};
 				newConvo.latestMessageText = message.text;
 				setConversations((prev) => [ newConvo, ...prev ]);
-				console.log('setConversations');
 			} else {
 				setConversations((prev) =>
 					prev.map((convo) => {
@@ -125,13 +123,6 @@ const Home = ({ user, logout }) => {
 			}
 		},
 		[ setConversations ]
-	);
-
-	useEffect(
-		() => {
-			console.log(conversations);
-		},
-		[ conversations ]
 	);
 
 	const setActiveChat = (username) => {
