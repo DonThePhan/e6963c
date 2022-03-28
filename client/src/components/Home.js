@@ -115,7 +115,7 @@ const Home = ({ user, logout }) => {
 					prev.map((convo) => {
 						if (convo.id === message.conversationId) {
 							const newConvo = { ...convo };
-							newConvo.messages.push(message);
+							newConvo.messages.unshift(message);
 							newConvo.latestMessageText = message.text;
 							return newConvo;
 						}
@@ -206,9 +206,11 @@ const Home = ({ user, logout }) => {
 		() => {
 			const fetchConversations = async () => {
 				try {
-					const { data } = await axios.get('/api/conversations');
-					console.log(data);
-					setConversations(data);
+					const { data: retrievedMessages } = await axios.get('/api/conversations');
+					const sortedRetrievedMessages = retrievedMessages
+						.slice()
+						.sort((msgA, msgB) => new Date(msgB.createdAt) - new Date(msgA.createdAt));
+					setConversations(sortedRetrievedMessages);
 				} catch (error) {
 					console.error(error);
 				}
