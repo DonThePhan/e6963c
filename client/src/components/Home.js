@@ -83,11 +83,11 @@ const Home = ({ user, logout }) => {
 			setConversations((prev) =>
         prev.map((convo) => {
 					if (convo.otherUser.id === recipientId) {
-						const newConvo = { ...convo, messages: [...convo.messages] };
-						newConvo.messages.push(message);
-						newConvo.latestMessageText = message.text;
-						newConvo.id = message.conversationId;
-						return newConvo;
+						const convoCopy = { ...convo, messages: [...convo.messages] };
+						convoCopy.messages.push(message);
+						convoCopy.latestMessageText = message.text;
+						convoCopy.id = message.conversationId;
+						return convoCopy;
 					}
 					return convo;
 				})
@@ -101,22 +101,22 @@ const Home = ({ user, logout }) => {
 			// if sender isn't null, that means the message needs to be put in a brand new convo
 			const { message, sender = null } = data;
 			if (sender !== null) {
-				const newConvo = {
+				const convoCopy = {
 					id: message.conversationId,
 					otherUser: sender,
 					messages: [ message ]
 				};
-				newConvo.latestMessageText = message.text;
-				setConversations((prev) => [ newConvo, ...prev ]);
+				convoCopy.latestMessageText = message.text;
+				setConversations((prev) => [ convoCopy, ...prev ]);
 			} else {
         // add message to current convo
 				setConversations((prev) =>
 					prev.map((convo) => {
 						if (convo.id === message.conversationId) {
-							const newConvo = { ...convo };
-							newConvo.messages.unshift(message);
-							newConvo.latestMessageText = message.text;
-							return newConvo;
+							const convoCopy = { ...convo };
+							convoCopy.messages.unshift(message);
+							convoCopy.latestMessageText = message.text;
+							return convoCopy;
 						}
 						return convo;
 					})
