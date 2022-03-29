@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useState, useContext, Fragment } from 'react';
-import axios from 'axios';
-import { useHistory } from 'react-router-dom';
-import { Grid, CssBaseline, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useCallback, useEffect, useState, useContext, Fragment } from "react";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
+import { Grid, CssBaseline, Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
-import { SidebarContainer } from '../components/Sidebar';
-import { ActiveChat } from '../components/ActiveChat';
-import { SocketContext } from '../context/socket';
+import { SidebarContainer } from "../components/Sidebar";
+import { ActiveChat } from "../components/ActiveChat";
+import { SocketContext } from "../context/socket";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		height: '100vh'
-	}
+		height: "100vh",
+	},
 }));
 
 const Home = ({ user, logout }) => {
@@ -50,15 +50,15 @@ const Home = ({ user, logout }) => {
 	};
 
 	const saveMessage = async (body) => {
-		const { data } = await axios.post('/api/messages', body);
+		const { data } = await axios.post("/api/messages", body);
 		return data;
 	};
 
 	const sendMessage = (data, body) => {
-		socket.emit('new-message', {
+		socket.emit("new-message", {
 			message: data.message,
 			recipientId: body.recipientId,
-			sender: data.sender
+			sender: data.sender,
 		});
 	};
 
@@ -104,7 +104,7 @@ const Home = ({ user, logout }) => {
 				const convoCopy = {
 					id: message.conversationId,
 					otherUser: sender,
-					messages: [ message ]
+					messages: [ message ],
 				};
 				convoCopy.latestMessageText = message.text;
 				setConversations((prev) => [ convoCopy, ...prev ]);
@@ -131,8 +131,12 @@ const Home = ({ user, logout }) => {
 		const senderId = convo.otherUser.id;
 		const conversationId = convo.id;
 
-		// patch selected convo message read status' to true in backend
-		await axios.patch('/api/messages/messages-read', { senderId, conversationId });
+		try {
+			// patch selected convo message read status' to true in backend
+			await axios.patch("/api/messages/messages-read", { senderId, conversationId });
+		} catch (error) {
+			console.log(error);
+		}
 
 		// update selected convo message read status' in conversations
 		setConversations((prev) =>
@@ -186,16 +190,16 @@ const Home = ({ user, logout }) => {
 	useEffect(
 		() => {
 			// Socket init
-			socket.on('add-online-user', addOnlineUser);
-			socket.on('remove-offline-user', removeOfflineUser);
-			socket.on('new-message', addMessageToConversation);
+			socket.on("add-online-user", addOnlineUser);
+			socket.on("remove-offline-user", removeOfflineUser);
+			socket.on("new-message", addMessageToConversation);
 
 			return () => {
 				// before the component is destroyed
 				// unbind all event handlers used in this component
-				socket.off('add-online-user', addOnlineUser);
-				socket.off('remove-offline-user', removeOfflineUser);
-				socket.off('new-message', addMessageToConversation);
+				socket.off("add-online-user", addOnlineUser);
+				socket.off("remove-offline-user", removeOfflineUser);
+				socket.off("new-message", addMessageToConversation);
 			};
 		},
 		[ addMessageToConversation, addOnlineUser, removeOfflineUser, socket ]
@@ -210,8 +214,8 @@ const Home = ({ user, logout }) => {
 				setIsLoggedIn(true);
 			} else {
 				// If we were previously logged in, redirect to login instead of register
-				if (isLoggedIn) history.push('/login');
-				else history.push('/register');
+				if (isLoggedIn) history.push("/login");
+				else history.push("/register");
 			}
 		},
 		[ user, history, isLoggedIn ]
@@ -221,7 +225,7 @@ const Home = ({ user, logout }) => {
 		() => {
 			const fetchConversations = async () => {
 				try {
-					const { data: retrievedMessages } = await axios.get('/api/conversations');
+					const { data: retrievedMessages } = await axios.get("/api/conversations");
 					const sortedRetrievedMessages = retrievedMessages
 						.slice()
 						.sort((msgA, msgB) => new Date(msgB.createdAt) - new Date(msgA.createdAt));
