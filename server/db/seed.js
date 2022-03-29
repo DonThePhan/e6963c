@@ -61,7 +61,7 @@ async function seed() {
 		conversationId: chiumboConvo.id,
 		senderId: chiumbo.id,
 		text: 'Sure! What time?',
-		read: true
+		read: false
 	});
 
 	const hualing = await User.create({
@@ -77,13 +77,13 @@ async function seed() {
 	});
 
 	// todo i = 1 introduced for development efficiency. Will remove on completion
-	// for (let i = 0; i < 11; i++) {
-	for (let i = 0; i < 1; i++) {
+	for (let i = 0; i < 11; i++) {
+		// for (let i = 0; i < 1; i++) {
 		await Message.create({
 			conversationId: hualingConvo.id,
 			senderId: hualing.id,
 			text: 'a test message',
-			read: true
+			read: false
 		});
 	}
 
@@ -91,7 +91,7 @@ async function seed() {
 		conversationId: hualingConvo.id,
 		senderId: hualing.id,
 		text: '😂 😂 😂',
-		read: true
+		read: false
 	});
 
 	const otherUsers = await Promise.all([

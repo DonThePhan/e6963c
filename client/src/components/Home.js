@@ -81,9 +81,9 @@ const Home = ({ user, logout }) => {
 	const addNewConvo = useCallback(
 		(recipientId, message) => {
 			setConversations((prev) =>
-        prev.map((convo) => {
+				prev.map((convo) => {
 					if (convo.otherUser.id === recipientId) {
-						const convoCopy = { ...convo, messages: [...convo.messages] };
+						const convoCopy = { ...convo, messages: [ ...convo.messages ] };
 						convoCopy.messages.push(message);
 						convoCopy.latestMessageText = message.text;
 						convoCopy.id = message.conversationId;
@@ -109,7 +109,7 @@ const Home = ({ user, logout }) => {
 				convoCopy.latestMessageText = message.text;
 				setConversations((prev) => [ convoCopy, ...prev ]);
 			} else {
-        // add message to current convo
+				// add message to current convo
 				setConversations((prev) =>
 					prev.map((convo) => {
 						if (convo.id === message.conversationId) {
@@ -126,7 +126,30 @@ const Home = ({ user, logout }) => {
 		[ setConversations ]
 	);
 
-	const setActiveChat = (username) => {
+	const setActiveChat = async (username) => {
+		const convo = conversations.find((convo) => convo.otherUser.username === username);
+		const senderId = convo.otherUser.id;
+		const conversationId = convo.id;
+
+		// patch selected convo message read status' to true in backend
+		await axios.patch('/api/messages/messages-read', { senderId, conversationId });
+
+		// update selected convo message read status' in conversations
+		setConversations((prev) =>
+			prev.map((convo) => {
+				if (convo.id === conversationId) {
+					const convoCopy = { ...convo };
+					convoCopy.messages.forEach((message) => {
+						if (senderId === message.senderId) {
+							message.read = true;
+						}
+					});
+					return convoCopy;
+				} else {
+					return convo;
+				}
+			})
+		);
 		setActiveConversation(username);
 	};
 

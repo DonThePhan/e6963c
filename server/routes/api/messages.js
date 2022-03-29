@@ -1,9 +1,10 @@
-const router = require('express').Router();
-const { Conversation, Message } = require('../../db/models');
-const onlineUsers = require('../../onlineUsers');
+const router = require("express").Router();
+const { Conversation, Message } = require("../../db/models");
+const onlineUsers = require("../../onlineUsers");
+const cors = require("cors");
 
 // expects {recipientId, text, conversationId } in body (conversationId will be null if no conversation exists yet)
-router.post('/', async (req, res, next) => {
+router.post("/", async (req, res, next) => {
 	try {
 		if (!req.user) {
 			return res.sendStatus(401);
@@ -23,7 +24,7 @@ router.post('/', async (req, res, next) => {
 			// create conversation
 			conversation = await Conversation.create({
 				user1Id: senderId,
-				user2Id: recipientId
+				user2Id: recipientId,
 			});
 			if (onlineUsers.includes(sender.id)) {
 				sender.online = true;
@@ -33,7 +34,7 @@ router.post('/', async (req, res, next) => {
 			senderId,
 			text,
 			conversationId: conversation.id,
-			read
+			read,
 		});
 		res.json({ message, sender });
 	} catch (error) {
@@ -41,7 +42,9 @@ router.post('/', async (req, res, next) => {
 	}
 });
 
-router.patch('/messages-read', async (req, res, next) => {
+// change attribute read = true for all messages with matching conversation and received by user
+// expects {conversationId, senderId } in body
+router.patch("/messages-read", cors(), async (req, res, next) => {
 	try {
 		if (!req.user) {
 			return res.sendStatus(401);
@@ -49,16 +52,15 @@ router.patch('/messages-read', async (req, res, next) => {
 		const { conversationId, senderId } = req.body;
 
 		await Message.update(
-			{
-				read: true
-			},
+			{ read: true },
 			{
 				where: {
-					conversationId: conversationId,
-					senderId: senderId
-				}
+					conversationId,
+					senderId,
+				},
 			}
 		);
+
 		res.sendStatus(200);
 	} catch (error) {
 		next(error);
