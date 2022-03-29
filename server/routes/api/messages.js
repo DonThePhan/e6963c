@@ -41,21 +41,25 @@ router.post('/', async (req, res, next) => {
 	}
 });
 
-router.patch('/', async (req, res, next) => {
+router.patch('/messages-read', async (req, res, next) => {
 	try {
 		if (!req.user) {
 			return res.sendStatus(401);
 		}
-		const senderId = req.user.id;
-		const { conversationId, sender, read } = req.body;
+		const { conversationId, senderId } = req.body;
 
-		const message = await Message.create({
-			senderId,
-			text,
-			conversationId: conversation.id,
-			read
-		});
-		res.json({ message, sender });
+		await Message.update(
+			{
+				read: true
+			},
+			{
+				where: {
+					conversationId: conversationId,
+					senderId: senderId
+				}
+			}
+		);
+		res.sendStatus(200);
 	} catch (error) {
 		next(error);
 	}
