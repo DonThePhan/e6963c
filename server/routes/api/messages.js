@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { Conversation, Message } = require("../../db/models");
+const { Conversation, Message, ConversationUser } = require("../../db/models");
 const onlineUsers = require("../../onlineUsers");
 const cors = require("cors");
 
@@ -21,11 +21,22 @@ router.post("/", async (req, res, next) => {
 		let conversation = await Conversation.findConversation(senderId, recipientId);
 
 		if (!conversation) {
-			// create conversation
+			// create conversation -> conversations will start with 2 users. We will add more afterward
 			conversation = await Conversation.create({
 				user1Id: senderId,
-				user2Id: recipientId,
+				user2Id: recipientId
 			});
+
+			// create ConversationUser for each user (2 for new conversation)
+			ConversationUser.create({
+				conversationId: conversation.id,
+				userId: senderId
+			});
+			ConversationUser.create({
+				conversationId: conversation.id,
+				userId: recipientId
+      });
+      
 			if (onlineUsers.includes(sender.id)) {
 				sender.online = true;
 			}
@@ -34,7 +45,7 @@ router.post("/", async (req, res, next) => {
 			senderId,
 			text,
 			conversationId: conversation.id,
-			read,
+			read
 		});
 		res.json({ message, sender });
 	} catch (error) {
@@ -56,8 +67,8 @@ router.patch("/messages-read", cors(), async (req, res, next) => {
 			{
 				where: {
 					conversationId,
-					senderId,
-				},
+					senderId
+				}
 			}
 		);
 
