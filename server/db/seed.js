@@ -11,8 +11,7 @@ async function seed() {
     username: "thomas",
     email: "thomas@email.com",
     password: "123456",
-    photoUrl:
-      "https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914467/messenger/thomas_kwzerk.png",
+    photoUrl: "https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914467/messenger/thomas_kwzerk.png",
   });
 
   const santiago = await User.create({
@@ -73,7 +72,9 @@ async function seed() {
     user1Id: thomas.id,
   });
 
+  // todo i = 1 introduced for development efficiency. Will remove on completion
   for (let i = 0; i < 11; i++) {
+    // for (let i = 0; i < 1; i++) {
     await Message.create({
       conversationId: hualingConvo.id,
       senderId: hualing.id,
@@ -111,6 +112,16 @@ async function seed() {
       photoUrl:
         "https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914466/messenger/9e2972c07afac45a8b03f5be3d0a796abe2e566e_ttq23y.png",
     }),
+    User.create({
+      username: "1",
+      email: "1@email.com",
+      password: "123456",
+    }),
+    User.create({
+      username: "2",
+      email: "2@email.com",
+      password: "123456",
+    }),
   ]);
 
   console.log(`seeded users and messages`);
@@ -133,3 +144,5 @@ async function runSeed() {
 if (module === require.main) {
   runSeed();
 }
+
+module.exports = runSeed;

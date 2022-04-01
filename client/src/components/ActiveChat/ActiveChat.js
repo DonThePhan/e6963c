@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 import { Input, Header, Messages } from './index';
@@ -40,14 +40,14 @@ const ActiveChat = ({
   return (
     <Box className={classes.root}>
       {isConversation(conversation) && conversation.otherUser && (
-        <>
+        <Fragment>
           <Header
             username={conversation.otherUser.username}
             online={conversation.otherUser.online || false}
           />
           <Box className={classes.chatContainer}>
             {user && (
-              <>
+              <Fragment>
                 <Messages
                   messages={conversation.messages}
                   otherUser={conversation.otherUser}
@@ -59,10 +59,10 @@ const ActiveChat = ({
                   user={user}
                   postMessage={postMessage}
                 />
-              </>
+              </Fragment>
             )}
           </Box>
-        </>
+        </Fragment>
       )}
     </Box>
   );
