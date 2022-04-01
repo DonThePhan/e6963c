@@ -114,7 +114,7 @@ const Home = ({ user, logout }) => {
         setConversations((prev) =>
           prev.map((convo) => {
             if (convo.id === message.conversationId) {
-              const convoCopy = { ...convo };
+              const convoCopy = structuredClone(convo)
               convoCopy.messages.push(message);
               convoCopy.latestMessageText = message.text;
               return convoCopy;
@@ -135,7 +135,7 @@ const Home = ({ user, logout }) => {
     setConversations((prev) =>
       prev.map((convo) => {
         if (convo.otherUser.id === id) {
-          const convoCopy = { ...convo };
+          const convoCopy = structuredClone(convo)
           convoCopy.otherUser = { ...convoCopy.otherUser, online: true };
           return convoCopy;
         } else {
@@ -149,7 +149,7 @@ const Home = ({ user, logout }) => {
     setConversations((prev) =>
       prev.map((convo) => {
         if (convo.otherUser.id === id) {
-          const convoCopy = { ...convo };
+          const convoCopy = structuredClone(convo)
           convoCopy.otherUser = { ...convoCopy.otherUser, online: false };
           return convoCopy;
         } else {
