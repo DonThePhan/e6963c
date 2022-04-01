@@ -65,7 +65,6 @@ const Home = ({ user, logout }) => {
   const postMessage = async (body) => {
     try {
       const data = await saveMessage(body);
-      
 
       if (!body.conversationId) {
         addNewConvo(body.recipientId, data.message);
@@ -84,7 +83,7 @@ const Home = ({ user, logout }) => {
       setConversations((prev) =>
         prev.map((convo) => {
           if (convo.otherUser.id === recipientId) {
-            const convoCopy = JSON.parse(JSON.stringify(convo))
+            const convoCopy = JSON.parse(JSON.stringify(convo));
             convoCopy.messages.push(message);
             convoCopy.latestMessageText = message.text;
             convoCopy.id = message.conversationId;
@@ -114,7 +113,7 @@ const Home = ({ user, logout }) => {
         setConversations((prev) =>
           prev.map((convo) => {
             if (convo.id === message.conversationId) {
-              const convoCopy = JSON.parse(JSON.stringify(convo))
+              const convoCopy = JSON.parse(JSON.stringify(convo));
               convoCopy.messages.push(message);
               convoCopy.latestMessageText = message.text;
               return convoCopy;
@@ -135,7 +134,7 @@ const Home = ({ user, logout }) => {
     setConversations((prev) =>
       prev.map((convo) => {
         if (convo.otherUser.id === id) {
-          const convoCopy = JSON.parse(JSON.stringify(convo))
+          const convoCopy = JSON.parse(JSON.stringify(convo));
           convoCopy.otherUser = { ...convoCopy.otherUser, online: true };
           return convoCopy;
         } else {
@@ -149,7 +148,7 @@ const Home = ({ user, logout }) => {
     setConversations((prev) =>
       prev.map((convo) => {
         if (convo.otherUser.id === id) {
-          const convoCopy = JSON.parse(JSON.stringify(convo))
+          const convoCopy = JSON.parse(JSON.stringify(convo));
           convoCopy.otherUser = { ...convoCopy.otherUser, online: false };
           return convoCopy;
         } else {
