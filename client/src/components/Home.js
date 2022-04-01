@@ -65,6 +65,7 @@ const Home = ({ user, logout }) => {
   const postMessage = async (body) => {
     try {
       const data = await saveMessage(body);
+      
 
       if (!body.conversationId) {
         addNewConvo(body.recipientId, data.message);
@@ -114,7 +115,7 @@ const Home = ({ user, logout }) => {
           prev.map((convo) => {
             if (convo.id === message.conversationId) {
               const convoCopy = { ...convo };
-              convoCopy.messages.unshift(message);
+              convoCopy.messages.push(message);
               convoCopy.latestMessageText = message.text;
               return convoCopy;
             }
