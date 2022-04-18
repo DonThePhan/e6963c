@@ -8,6 +8,8 @@ import { SidebarContainer } from "../components/Sidebar";
 import { ActiveChat } from "../components/ActiveChat";
 import { SocketContext } from "../context/socket";
 
+import { markMessagesAsRead } from "../helpers";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
@@ -131,29 +133,8 @@ const Home = ({ user, logout }) => {
     const senderId = convo.otherUser.id;
     const conversationId = convo.id;
 
-    try {
-      // patch selected convo message read status' to true in backend
-      await axios.patch("/api/messages/messages-read", { senderId, conversationId });
-    } catch (error) {
-      console.log(error);
-    }
-
-    // update selected convo message read status' in conversations
-    setConversations((prev) =>
-      prev.map((convo) => {
-        if (convo.id === conversationId) {
-          const convoCopy = JSON.parse(JSON.stringify(convo));
-          convoCopy.messages.forEach((message) => {
-            if (senderId === message.senderId) {
-              message.read = true;
-            }
-          });
-          return convoCopy;
-        } else {
-          return convo;
-        }
-      }),
-    );
+    // mark all messages for current convo for current reader as read = true for Frontend and Backend
+    await markMessagesAsRead({ userId: senderId, conversationId, setConversations });
     setActiveConversation(username);
   };
 
