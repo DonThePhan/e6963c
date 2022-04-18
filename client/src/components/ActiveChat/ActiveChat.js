@@ -1,36 +1,29 @@
-import React, { Fragment} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box } from '@material-ui/core';
-import { Input, Header, Messages } from './index';
+import React, { Fragment } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Box } from "@material-ui/core";
+import { Input, Header, Messages } from "./index";
 
 const useStyles = makeStyles(() => ({
   root: {
-    display: 'flex',
+    display: "flex",
     flexGrow: 8,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   chatContainer: {
     marginLeft: 41,
     marginRight: 41,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     flexGrow: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 }));
 
-const ActiveChat = ({
-  user,
-  conversations,
-  activeConversation,
-  postMessage,
-}) => {
+const ActiveChat = ({ user, conversations, activeConversation, postMessage }) => {
   const classes = useStyles();
 
   const conversation = conversations
-    ? conversations.find(
-        (conversation) => conversation.otherUser.username === activeConversation
-      )
+    ? conversations.find((conversation) => conversation.otherUser.username === activeConversation)
     : {};
 
   const isConversation = (obj) => {
@@ -39,20 +32,14 @@ const ActiveChat = ({
 
   return (
     <Box className={classes.root}>
-      {isConversation(conversation) && conversation.otherUser && (
+      {isConversation(conversation) &&
+      conversation.otherUser && (
         <Fragment>
-          <Header
-            username={conversation.otherUser.username}
-            online={conversation.otherUser.online || false}
-          />
+          <Header username={conversation.otherUser.username} online={conversation.otherUser.online || false} />
           <Box className={classes.chatContainer}>
             {user && (
               <Fragment>
-                <Messages
-                  messages={conversation.messages}
-                  otherUser={conversation.otherUser}
-                  user={user}
-                />
+                <Messages messages={conversation.messages} otherUser={conversation.otherUser} user={user} />
                 <Input
                   otherUser={conversation.otherUser}
                   conversationId={conversation.id || null}
