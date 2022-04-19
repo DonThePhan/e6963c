@@ -119,12 +119,13 @@ const Home = ({ user, logout }) => {
               convoCopy.messages.push(message);
               convoCopy.latestMessageText = message.text;
 
-              // if conversation is currently active (open in browser), mark messages as read = true
+              // if chat active (open in browser), mark all messages recieved by THIS user from active chat as read ('read = true')
               if (convoCopy.otherUser.username === activeConversation) {
+                // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
                 markMessagesAsReadBackEnd({ userId: user.id, conversationId: convo.id, setConversations });
 
-                // tell sender message received
-                socket.emit("read-message", {
+                // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
+                socket.emit("messages-read", {
                   conversationId: convo.id,
                   userId: user.id,
                 });
@@ -145,20 +146,20 @@ const Home = ({ user, logout }) => {
   };
 
   const setActiveChat = async (username) => {
+    setActiveConversation(username);
+    
     const convo = conversations.find((convo) => convo.otherUser.username === username);
     const senderId = convo.otherUser.id;
     const conversationId = convo.id;
-
-    // mark all messages for current convo for current reader as read = true for Backend
-    await markMessagesAsReadBackEnd({ userId: senderId, conversationId });
-
-    // tell sender that message received
-    socket.emit("read-message", {
+    
+    // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
+    markMessagesAsReadBackEnd({ userId: senderId, conversationId });
+    
+    // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
+    socket.emit("messages-read", {
       conversationId: convo.id,
       userId: user.id,
     });
-
-    setActiveConversation(username);
   };
 
   const addOnlineUser = useCallback((id) => {
@@ -190,14 +191,13 @@ const Home = ({ user, logout }) => {
   }, []);
 
   // Lifecycle
-
   useEffect(
     () => {
       // Socket init
       socket.on("add-online-user", addOnlineUser);
       socket.on("remove-offline-user", removeOfflineUser);
       socket.on("new-message", addMessageToConversation);
-      socket.on("read-message", handleReadMessages);
+      socket.on("messages-read", handleReadMessages);
 
       return () => {
         // before the component is destroyed
@@ -205,7 +205,7 @@ const Home = ({ user, logout }) => {
         socket.off("add-online-user", addOnlineUser);
         socket.off("remove-offline-user", removeOfflineUser);
         socket.off("new-message", addMessageToConversation);
-        socket.off("read-message", handleReadMessages);
+        socket.off("messages-read", handleReadMessages);
       };
     },
     [ addMessageToConversation, addOnlineUser, removeOfflineUser, socket ],
