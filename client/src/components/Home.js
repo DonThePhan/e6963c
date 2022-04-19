@@ -8,7 +8,7 @@ import { SidebarContainer } from "../components/Sidebar";
 import { ActiveChat } from "../components/ActiveChat";
 import { SocketContext } from "../context/socket";
 
-import { markMessagesAsRead } from "../helpers";
+import { markMessagesAsReadFrontEnd, markMessagesAsReadBackEnd } from "../helpers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -118,6 +118,18 @@ const Home = ({ user, logout }) => {
               const convoCopy = JSON.parse(JSON.stringify(convo));
               convoCopy.messages.push(message);
               convoCopy.latestMessageText = message.text;
+
+              // if conversation is currently active (open in browser), mark messages as read = true
+              if (convoCopy.otherUser.username === activeConversation) {
+                markMessagesAsReadBackEnd({ userId: user.id, conversationId: convo.id, setConversations });
+
+                // tell sender message received
+                socket.emit("read-message", {
+                  conversationId: convo.id,
+                  userId: user.id,
+                });
+              }
+
               return convoCopy;
             }
             return convo;
@@ -125,16 +137,27 @@ const Home = ({ user, logout }) => {
         );
       }
     },
-    [ setConversations ],
+    [ setConversations, activeConversation, socket ],
   );
+
+  const handleReadMessages = (data) => {
+    markMessagesAsReadFrontEnd({ userId: user.id, conversationId: data.conversationId, setConversations });
+  };
 
   const setActiveChat = async (username) => {
     const convo = conversations.find((convo) => convo.otherUser.username === username);
     const senderId = convo.otherUser.id;
     const conversationId = convo.id;
 
-    // mark all messages for current convo for current reader as read = true for Frontend and Backend
-    await markMessagesAsRead({ userId: senderId, conversationId, setConversations });
+    // mark all messages for current convo for current reader as read = true for Backend
+    await markMessagesAsReadBackEnd({ userId: senderId, conversationId });
+
+    // tell sender that message received
+    socket.emit("read-message", {
+      conversationId: convo.id,
+      userId: user.id,
+    });
+
     setActiveConversation(username);
   };
 
@@ -174,6 +197,7 @@ const Home = ({ user, logout }) => {
       socket.on("add-online-user", addOnlineUser);
       socket.on("remove-offline-user", removeOfflineUser);
       socket.on("new-message", addMessageToConversation);
+      socket.on("read-message", handleReadMessages);
 
       return () => {
         // before the component is destroyed
@@ -181,6 +205,7 @@ const Home = ({ user, logout }) => {
         socket.off("add-online-user", addOnlineUser);
         socket.off("remove-offline-user", removeOfflineUser);
         socket.off("new-message", addMessageToConversation);
+        socket.off("read-message", handleReadMessages);
       };
     },
     [ addMessageToConversation, addOnlineUser, removeOfflineUser, socket ],

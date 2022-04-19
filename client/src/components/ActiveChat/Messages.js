@@ -10,7 +10,7 @@ const Messages = (props) => {
   const messagesReadByOther = messages.filter((message) => message.senderId === user.id && message.read);
   let lastMessageReadByOtherId;
   if (messagesReadByOther.length > 0) {
-    lastMessageReadByOtherId = messagesReadByOther[0].id;
+    lastMessageReadByOtherId = messagesReadByOther[messagesReadByOther.length - 1].id;
   } else {
     lastMessageReadByOtherId = null;
   }
