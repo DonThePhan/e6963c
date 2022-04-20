@@ -23,8 +23,10 @@ const Messages = (props) => {
         // subsequently, check if last message was sent from user and if it was read
         const lastMessage = messages[messages.length - 1];
 
-        if (lastMessage.senderId === user.id && lastMessage.read) {
-          setLastMessageReadByOtherId(lastMessage.id);
+        if (lastMessage) {
+          if (lastMessage.senderId === user.id && lastMessage.read) {
+            setLastMessageReadByOtherId(lastMessage.id);
+          }
         }
       }
     },
