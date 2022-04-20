@@ -34,3 +34,13 @@ export const markMessagesAsReadFrontEnd = ({ userId, conversationId, setConversa
     }
   });
 };
+
+export const messagesUnreadCount = async ({ conversationId }) => {
+  try {
+    // patch selected convo message read status' to true in Backend
+    const response = await axios.get(`/api/messages/messages-unread/${conversationId}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
