@@ -43,9 +43,12 @@ const ChatContent = ({ conversation, userId }) => {
   // const unread = conversation.messages.filter((message) => message.senderId !== userId && !message.read).length;
 
   useEffect(
-    async () => {
-      const count = await messagesUnreadCount({ conversationId: conversation.id });
-      setUnread(count);
+    () => {
+      const dataFetch = async () => {
+        const count = await messagesUnreadCount({ conversationId: conversation.id });
+        setUnread(count);
+      };
+      dataFetch();
     },
     [ conversation ],
   );

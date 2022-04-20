@@ -24,13 +24,6 @@ const Home = ({ user, logout }) => {
   const [ conversations, setConversations ] = useState([]);
   const [ activeConversation, setActiveConversation ] = useState(null);
 
-  useEffect(
-    () => {
-      console.log(conversations);
-    },
-    [ conversations ],
-  );
-
   const classes = useStyles();
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
 

@@ -47,10 +47,19 @@ router.post("/", async (req, res, next) => {
 // expects {conversationId, senderId } in body
 router.patch("/messages-read", cors(), async (req, res, next) => {
   try {
+    const userId = req.user.id;
+    const { conversationId, senderId } = req.body;
+
+    // confirm user logged in
     if (!req.user) {
       return res.sendStatus(401);
     }
-    const { conversationId, senderId } = req.body;
+
+    // confirm conversation exists & user has permission to access conversation
+    const conversation = await Conversation.findConversation(userId, senderId);
+    if (!conversation || conversation.id !== conversationId) {
+      return res.sendStatus(401);
+    }
 
     await Message.update(
       { read: true },
