@@ -1,22 +1,22 @@
 import axios from "axios";
 
-export const markMessagesAsReadBackEnd = async ({ userId, conversationId }) => {
+export const markMessagesAsReadBackEnd = async ({ senderId, conversationId }) => {
   try {
     // patch selected convo message read status' to true in Backend
-    await axios.patch("/api/messages/read-status", { senderId: userId, conversationId });
+    await axios.patch("/api/messages/read-status", { senderId, conversationId });
   } catch (error) {
     console.log(error);
   }
 };
 
-export const markMessagesAsReadFrontEnd = ({ userId, conversationId, setConversations }) => {
+export const markMessagesAsReadFrontEnd = ({ senderId, conversationId, setConversations }) => {
   // update selected convo message read status' in conversations (Frontend)
   setConversations((prev) => {
     const convosCopy = JSON.parse(JSON.stringify(prev)).map((convo) => {
       if (convo.id === conversationId) {
         const convoCopy = JSON.parse(JSON.stringify(convo));
         convoCopy.messages.forEach((message) => {
-          if (userId === message.senderId) {
+          if (senderId === message.senderId) {
             message.read = true;
           }
         });
