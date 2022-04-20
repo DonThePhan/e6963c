@@ -3,7 +3,7 @@ import axios from "axios";
 export const markMessagesAsReadBackEnd = async ({ userId, conversationId }) => {
   try {
     // patch selected convo message read status' to true in Backend
-    await axios.patch("/api/messages/messages-read", { senderId: userId, conversationId });
+    await axios.patch("/api/messages/read-status", { senderId: userId, conversationId });
   } catch (error) {
     console.log(error);
   }
@@ -38,7 +38,7 @@ export const markMessagesAsReadFrontEnd = ({ userId, conversationId, setConversa
 export const messagesUnreadCount = async ({ conversationId }) => {
   try {
     // patch selected convo message read status' to true in Backend
-    const response = await axios.get(`/api/messages/messages-unread/${conversationId}`);
+    const response = await axios.get(`/api/messages/unread-count/${conversationId}`);
     return response.data;
   } catch (error) {
     console.log(error);

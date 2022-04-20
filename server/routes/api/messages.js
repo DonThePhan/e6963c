@@ -45,7 +45,7 @@ router.post("/", async (req, res, next) => {
 
 // change attribute read = true for all messages with matching conversation and received by user
 // expects {conversationId, senderId } in body
-router.patch("/messages-read", cors(), async (req, res, next) => {
+router.patch("/read-status", cors(), async (req, res, next) => {
   try {
     const userId = req.user.id;
     const { conversationId, senderId } = req.body;
@@ -77,7 +77,7 @@ router.patch("/messages-read", cors(), async (req, res, next) => {
   }
 });
 
-router.get("/messages-unread/:conversationId", async (req, res, next) => {
+router.get("/unread-count/:conversationId", async (req, res, next) => {
   try {
     if (!req.user) {
       return res.sendStatus(401);
