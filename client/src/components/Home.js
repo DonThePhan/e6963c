@@ -24,6 +24,13 @@ const Home = ({ user, logout }) => {
   const [ conversations, setConversations ] = useState([]);
   const [ activeConversation, setActiveConversation ] = useState(null);
 
+  useEffect(
+    () => {
+      console.log(conversations);
+    },
+    [ conversations ],
+  );
+
   const classes = useStyles();
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
 
@@ -120,7 +127,7 @@ const Home = ({ user, logout }) => {
               convoCopy.latestMessageText = message.text;
 
               // if chat active (open in browser), mark all messages recieved by THIS user from active chat as read ('read = true')
-              if (convoCopy.otherUser.username === activeConversation) {
+              if (convoCopy.otherUser.username === activeConversation && user.id !== message.senderId) {
                 // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
                 markMessagesAsReadBackEnd({ userId: user.id, conversationId: convo.id, setConversations });
 
@@ -138,23 +145,26 @@ const Home = ({ user, logout }) => {
         );
       }
     },
-    [ setConversations, activeConversation, socket ],
+    [ setConversations, activeConversation, socket, user.id ],
   );
 
-  const handleReadMessages = (data) => {
-    markMessagesAsReadFrontEnd({ userId: user.id, conversationId: data.conversationId, setConversations });
-  };
+  const handleReadMessages = useCallback(
+    (data) => {
+      markMessagesAsReadFrontEnd({ userId: user.id, conversationId: data.conversationId, setConversations });
+    },
+    [ user.id ],
+  );
 
   const setActiveChat = async (username) => {
     setActiveConversation(username);
-    
+
     const convo = conversations.find((convo) => convo.otherUser.username === username);
     const senderId = convo.otherUser.id;
     const conversationId = convo.id;
-    
+
     // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
     markMessagesAsReadBackEnd({ userId: senderId, conversationId });
-    
+
     // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
     socket.emit("messages-read", {
       conversationId: convo.id,
@@ -208,7 +218,7 @@ const Home = ({ user, logout }) => {
         socket.off("messages-read", handleReadMessages);
       };
     },
-    [ addMessageToConversation, addOnlineUser, removeOfflineUser, socket ],
+    [ addMessageToConversation, addOnlineUser, removeOfflineUser, handleReadMessages, socket ],
   );
 
   useEffect(
