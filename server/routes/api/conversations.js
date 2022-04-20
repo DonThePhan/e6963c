@@ -50,7 +50,6 @@ router.get("/", async (req, res, next) => {
     for (let i = 0; i < conversations.length; i++) {
       const convo = conversations[i];
       const convoJSON = convo.toJSON();
-      console.log(convoJSON);
 
       // set a property "otherUser" so that frontend will have easier access
       if (convoJSON.user1) {
@@ -80,26 +79,3 @@ router.get("/", async (req, res, next) => {
 });
 
 module.exports = router;
-
-/*
- {
-  id: 1,
-  messages: [
-    {
-      id: 3,
-      text: 'Share photo of your city, please',
-      senderId: 2,
-      read: false,
-      conversationId: 1,
-      createdAt: 2022-03-23T05:54:51.613Z,
-      updatedAt: 2022-03-23T05:54:51.613Z
-    }
-  ],
-  otherUser: {
-    id: 2,
-    username: 'santiago',
-    photoUrl: 'https://res.cloudinary.com/dmlvthmqr/image/upload/v1607914466/messenger/775db5e79c5294846949f1f55059b53317f51e30_s3back.png'
-  }
-}
-
- */
