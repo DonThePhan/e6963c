@@ -122,7 +122,7 @@ const Home = ({ user, logout }) => {
               // if chat active (open in browser), mark all messages recieved by THIS user from active chat as read ('read = true')
               if (convoCopy.otherUser.username === activeConversation && user.id !== message.senderId) {
                 // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
-                markMessagesAsReadBackEnd({ senderId: user.id, conversationId: convo.id, setConversations });
+                markMessagesAsReadBackEnd({ senderId: user.id, conversationId: convo.id });
 
                 // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
                 socket.emit("messages-read", {
