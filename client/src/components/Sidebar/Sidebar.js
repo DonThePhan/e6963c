@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Sidebar = ({ handleChange, searchTerm, conversations = [], user, setActiveChat }) => {
+const Sidebar = ({ handleChange, searchTerm, conversations = [], user, setActiveChat, activeConversation }) => {
   const classes = useStyles();
 
   return (
@@ -35,6 +35,7 @@ const Sidebar = ({ handleChange, searchTerm, conversations = [], user, setActive
               key={conversation.otherUser.username}
               setActiveChat={setActiveChat}
               userId={user.id}
+              activeConversation={activeConversation}
             />
           );
         })}

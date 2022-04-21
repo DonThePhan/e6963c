@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Sidebar } from "./index";
 import axios from "axios";
 
-const SidebarContainer = ({ conversations, user, clearSearchedUsers, addSearchedUsers, setActiveChat }) => {
+const SidebarContainer = ({ conversations, user, clearSearchedUsers, addSearchedUsers, setActiveChat , activeConversation}) => {
   const [ searchTerm, setSearchTerm ] = useState("");
 
   const searchUsers = async (searchTerm) => {
@@ -37,6 +37,7 @@ const SidebarContainer = ({ conversations, user, clearSearchedUsers, addSearched
       conversations={conversations}
       user={user}
       setActiveChat={setActiveChat}
+      activeConversation={activeConversation}
     />
   );
 };

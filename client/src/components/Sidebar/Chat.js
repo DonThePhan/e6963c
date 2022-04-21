@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,12 +17,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Chat = ({ conversation, setActiveChat, userId }) => {
+const Chat = ({ conversation, setActiveChat, userId, activeConversation }) => {
   const classes = useStyles();
   const { otherUser } = conversation;
 
+  const [ unread, setUnread ] = useState(
+    conversation.messages.filter((message) => message.senderId === conversation.otherUser.id && !message.read).length,
+  );
+  const [ lastMessageId, setLastMessageId ] = useState(null);
+
+  // when new message received
+  useEffect(
+    () => {
+      if (conversation && conversation.messages && conversation.messages.length && conversation.messages.length > 0) {
+        const lastMessage = conversation.messages[conversation.messages.length - 1];
+
+        if (lastMessageId && lastMessage.id !== lastMessageId) {
+          if (lastMessage.senderId === activeConversation) {
+            setUnread(0);
+          } else {
+            setUnread((prev) => prev + 1);
+          }
+        }
+
+        if (conversation.otherUser.id === activeConversation) {
+          setUnread(0);
+        }
+        setLastMessageId(lastMessage.id);
+      }
+    },
+    [ conversation, lastMessageId ],
+  );
+
   const handleClick = async (conversation) => {
     await setActiveChat(conversation.otherUser.id);
+    setUnread(0);
   };
 
   return (
@@ -33,7 +62,7 @@ const Chat = ({ conversation, setActiveChat, userId }) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent conversation={conversation} userId={userId} />
+      <ChatContent conversation={conversation} userId={userId} unread={unread} />
     </Box>
   );
 };

@@ -1,7 +1,5 @@
 import { Box, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { messagesUnreadCount } from "../../helpers";
-import { useState, useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,23 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ChatContent = ({ conversation, userId }) => {
+const ChatContent = ({ conversation, userId, unread }) => {
   const classes = useStyles();
-
-  // find number of unread messages by other user
-  const [ unread, setUnread ] = useState(null);
-  // const unread = conversation.messages.filter((message) => message.senderId !== userId && !message.read).length;
-
-  useEffect(
-    () => {
-      const dataFetch = async () => {
-        const count = await messagesUnreadCount({ conversationId: conversation.id });
-        setUnread(count);
-      };
-      dataFetch();
-    },
-    [ conversation ],
-  );
 
   const { otherUser } = conversation;
   const latestMessageText = conversation.id && conversation.latestMessageText;
