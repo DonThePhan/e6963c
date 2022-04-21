@@ -119,23 +119,12 @@ const Home = ({ user, logout }) => {
               convoCopy.messages.push(message);
               convoCopy.latestMessageText = message.text;
 
-              // if chat active (open in browser), mark all messages recieved by THIS user from active chat as read ('read = true')
-              if (convoCopy.otherUser.username === activeConversation && user.id !== message.senderId) {
-                // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
-                markMessagesAsReadBackEnd({ senderId: user.id, conversationId: convo.id });
-
-                // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
-                socket.emit("messages-read", {
-                  conversationId: convo.id,
-                  userId: user.id,
-                });
-              }
-
               return convoCopy;
             }
             return convo;
           }),
         );
+        console.log(message)
       }
     },
     [ setConversations, activeConversation, socket, user.id ],
@@ -148,11 +137,11 @@ const Home = ({ user, logout }) => {
     [ user.id ],
   );
 
-  const setActiveChat = async (username) => {
-    setActiveConversation(username);
+  const setActiveChat = async (otherUserId) => {
+    setActiveConversation(otherUserId);
 
-    const convo = conversations.find((convo) => convo.otherUser.username === username);
-    const senderId = convo.otherUser.id;
+    const convo = conversations.find((convo) => convo.otherUser.id === otherUserId);
+    const senderId = otherUserId;
     const conversationId = convo.id;
 
     // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
