@@ -11,8 +11,8 @@ export const markMessagesAsReadBackEnd = async ({ senderId, conversationId }) =>
 
 export const markMessagesAsReadFrontEnd = ({ senderId, conversationId, setConversations }) => {
   // update selected convo message read status' in conversations (Frontend)
-  setConversations((prev) => {
-    const convosCopy = JSON.parse(JSON.stringify(prev)).map((convo) => {
+  setConversations((prevConvos) => {
+    const convosCopy = prevConvos.map((convo) => {
       if (convo.id === conversationId) {
         const convoCopy = JSON.parse(JSON.stringify(convo));
         convoCopy.messages.forEach((message) => {
@@ -27,8 +27,8 @@ export const markMessagesAsReadFrontEnd = ({ senderId, conversationId, setConver
     });
 
     // only return new object if changes made. Else return prev
-    if (JSON.parse(JSON.stringify(prev)) === JSON.parse(JSON.stringify(convosCopy))) {
-      return prev;
+    if (JSON.parse(JSON.stringify(prevConvos)) === JSON.parse(JSON.stringify(convosCopy))) {
+      return prevConvos;
     } else {
       return convosCopy;
     }
