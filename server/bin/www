@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
   socket.on("messages-read", (data) => {
     socket.broadcast.emit("messages-read", {
       conversationId: data.conversationId,
-      userId: data.userId,
+      recipientId: data.recipientId,
     });
   });
 

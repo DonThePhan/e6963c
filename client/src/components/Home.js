@@ -118,21 +118,38 @@ const Home = ({ user, logout }) => {
               const convoCopy = JSON.parse(JSON.stringify(convo));
               convoCopy.messages.push(message);
               convoCopy.latestMessageText = message.text;
-
               return convoCopy;
             }
             return convo;
           }),
         );
-        console.log(message)
+
+        // if conversation is open while message received
+        if (message.senderId === activeConversation) {
+          markMessagesAsReadBackEnd({ senderId: message.senderId, conversationId: message.conversationId });
+          markMessagesAsReadFrontEnd({
+            senderId: message.senderId,
+            conversationId: message.conversationId,
+            setConversations,
+          });
+
+          // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
+          socket.emit("messages-read", {
+            conversationId: message.conversationId,
+            recipientId: user.id,
+          });
+        }
       }
     },
     [ setConversations, activeConversation, socket, user.id ],
   );
 
+  // when recipient informed you they've read your conversation messages, update your frontend to reflect that
   const handleReadMessages = useCallback(
     (data) => {
-      markMessagesAsReadFrontEnd({ senderId: user.id, conversationId: data.conversationId, setConversations });
+      if (data.recipientId !== user.id) {
+        markMessagesAsReadFrontEnd({ senderId: user.id, conversationId: data.conversationId, setConversations });
+      }
     },
     [ user.id ],
   );
