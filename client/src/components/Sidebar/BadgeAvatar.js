@@ -30,9 +30,9 @@ const UserAvatar = ({ sidebar, username, photoUrl, online }) => {
     <Box className={sidebar ? classes.sidebar : ""}>
       <Badge
         classes={{ badge: `${classes.badge} ${online && classes.online}` }}
-        variant="dot"
+        variant='dot'
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        overlap="circular"
+        overlap='circular'
       >
         <Avatar alt={username} src={photoUrl} className={classes.profilePic} />
       </Badge>
