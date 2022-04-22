@@ -136,18 +136,21 @@ async function seed() {
     user1Id: thomas.id,
     user2Id: santiago.id,
   });
-  await ConversationUser.create({
-    conversationId: groupConvo1.id,
-    userId: thomas.id,
-  });
-  await ConversationUser.create({
-    conversationId: groupConvo1.id,
-    userId: santiago.id,
-  });
-  await ConversationUser.create({
-    conversationId: groupConvo1.id,
-    userId: chiumbo.id,
-  });
+
+  await Promise.all([
+    ConversationUser.create({
+      conversationId: groupConvo1.id,
+      userId: thomas.id,
+    }),
+    ConversationUser.create({
+      conversationId: groupConvo1.id,
+      userId: santiago.id,
+    }),
+    ConversationUser.create({
+      conversationId: groupConvo1.id,
+      userId: chiumbo.id,
+    }),
+  ]);
 
   console.log(`seeded users and messages`);
 }
