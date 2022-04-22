@@ -136,15 +136,15 @@ async function seed() {
     user1Id: thomas.id,
     user2Id: santiago.id,
   });
-  ConversationUser.create({
+  await ConversationUser.create({
     conversationId: groupConvo1.id,
     userId: thomas.id,
   });
-  ConversationUser.create({
+  await ConversationUser.create({
     conversationId: groupConvo1.id,
     userId: santiago.id,
   });
-  ConversationUser.create({
+  await ConversationUser.create({
     conversationId: groupConvo1.id,
     userId: chiumbo.id,
   });
