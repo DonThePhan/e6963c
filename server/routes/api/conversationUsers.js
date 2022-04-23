@@ -4,36 +4,37 @@ const { Op } = require("sequelize");
 
 // add UserConversation
 router.post("/", async (req, res, next) => {
-	try {
-		if (!req.user) {
-			return res.sendStatus(401);
-		}
-		const userId = req.user.id;
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
 
-		const { otherId, conversationId } = req.body;
-		const conversation = await Conversation.findOne({
-			where: {
-				id: conversationId,
-				[Op.or]: {
-					user1Id: userId,
-					user2Id: userId
-				}
-			}
-		});
+    const { userId, conversationId } = req.body;
 
-		// if no match found
-		if (!conversation) {
-			return res
-				.sendStatus(404)
-				.json({ error: `conversation with id ${conversationId} and userId ${userId} does not exist` });
-		}
+    if (userId !== req.user.id) {
+      return res.sendStatus(401);
+    }
 
-		const conversationUser = await ConversationUser.create({ conversationId, userId: otherId });
+    const conversation = await Conversation.findOne({
+      where: {
+        id: conversationId,
+        userId,
+      },
+    });
 
-		res.json(conversationUser);
-	} catch (error) {
-		next(error);
-	}
+    if (conversation) {
+      return res
+        .sendStatus(400)
+        .json({ error: `conversation_user with conversationId ${conversationId} and userId ${userId} already exists` });
+    }
+
+    // if no match found, create entry
+    const conversationUser = await ConversationUser.create({ conversationId, userId });
+
+    res.json(conversationUser);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
