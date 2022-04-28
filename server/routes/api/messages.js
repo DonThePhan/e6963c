@@ -58,7 +58,7 @@ router.patch("/read-status", cors(), async (req, res, next) => {
     // confirm conversation exists & user has permission to access conversation
     const conversation = await Conversation.findConversation(userId, senderId);
     if (!conversation || conversation.id !== conversationId) {
-      return res.sendStatus(401);
+      return res.sendStatus(403);
     }
 
     await Message.update(
