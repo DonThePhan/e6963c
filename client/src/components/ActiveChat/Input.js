@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { FormControl, FilledInput } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from "react";
+import { FormControl, FilledInput } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
   root: {
-    justifySelf: 'flex-end',
+    justifySelf: "flex-end",
     marginTop: 15,
   },
   input: {
     height: 70,
-    backgroundColor: '#F4F6FA',
+    backgroundColor: "#F4F6FA",
     borderRadius: 8,
     marginBottom: 20,
   },
@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 
 const Input = ({ otherUser, conversationId, user, postMessage }) => {
   const classes = useStyles();
-  const [text, setText] = useState('');
+  const [ text, setText ] = useState("");
 
   const handleChange = (event) => {
     setText(event.target.value);
@@ -33,9 +33,10 @@ const Input = ({ otherUser, conversationId, user, postMessage }) => {
       recipientId: otherUser.id,
       conversationId,
       sender: conversationId ? null : user,
+      read: false,
     };
     await postMessage(reqBody);
-    setText('');
+    setText("");
   };
 
   return (
@@ -44,9 +45,9 @@ const Input = ({ otherUser, conversationId, user, postMessage }) => {
         <FilledInput
           classes={{ root: classes.input }}
           disableUnderline
-          placeholder="Type something..."
+          placeholder='Type something...'
           value={text}
-          name="text"
+          name='text'
           onChange={handleChange}
         />
       </FormControl>

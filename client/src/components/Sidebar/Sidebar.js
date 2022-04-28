@@ -1,7 +1,7 @@
-import React from 'react';
-import { Box, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Search, Chat, CurrentUser } from './index';
+import React from "react";
+import { Box, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Search, Chat, CurrentUser } from "./index";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -12,19 +12,13 @@ const useStyles = makeStyles(() => ({
   title: {
     fontSize: 20,
     letterSpacing: -0.29,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 32,
     marginBottom: 15,
   },
 }));
 
-const Sidebar = ({
-  handleChange,
-  searchTerm,
-  conversations = [],
-  user,
-  setActiveChat,
-}) => {
+const Sidebar = ({ handleChange, searchTerm, conversations = [], user, setActiveChat, activeConversation }) => {
   const classes = useStyles();
 
   return (
@@ -33,15 +27,15 @@ const Sidebar = ({
       <Typography className={classes.title}>Chats</Typography>
       <Search handleChange={handleChange} />
       {conversations
-        .filter((conversation) =>
-          conversation.otherUser.username.includes(searchTerm)
-        )
+        .filter((conversation) => conversation.otherUser.username.includes(searchTerm))
         .map((conversation) => {
           return (
             <Chat
               conversation={conversation}
               key={conversation.otherUser.username}
               setActiveChat={setActiveChat}
+              userId={user.id}
+              activeConversation={activeConversation}
             />
           );
         })}

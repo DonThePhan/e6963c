@@ -22,12 +22,8 @@ const SnackbarError = ({ setSnackBarOpen, errorMessage, snackBarOpen }) => {
       message={errorMessage || "Sorry, an error occured. Please try again"}
       action={
         <React.Fragment>
-          <Button
-            className={classes.icon}
-            size="small"
-            onClick={() => setSnackBarOpen(false)}
-          >
-            <Close color="secondary" />
+          <Button className={classes.icon} size='small' onClick={() => setSnackBarOpen(false)}>
+            <Close color='secondary' />
           </Button>
         </React.Fragment>
       }

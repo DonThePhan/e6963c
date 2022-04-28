@@ -35,17 +35,17 @@ const Search = ({ handleChange }) => {
     <form onSubmit={handleSubmit}>
       <FormControl fullWidth hiddenLabel>
         <FilledInput
-          name="search"
+          name='search'
           onChange={handleChange}
           classes={{ root: classes.filledInput, input: classes.input }}
           disableUnderline
-          placeholder="Search"
+          placeholder='Search'
           startAdornment={
-            <InputAdornment position="start">
+            <InputAdornment position='start'>
               <SearchIcon />
             </InputAdornment>
           }
-        ></FilledInput>
+        />
       </FormControl>
     </form>
   );

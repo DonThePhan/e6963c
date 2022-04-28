@@ -10,6 +10,14 @@ const Message = db.define("message", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  read: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+  },
+  conversationId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
 });
 
 module.exports = Message;

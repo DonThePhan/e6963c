@@ -8,6 +8,8 @@ import { SidebarContainer } from "../components/Sidebar";
 import { ActiveChat } from "../components/ActiveChat";
 import { SocketContext } from "../context/socket";
 
+import { markMessagesAsReadFrontEnd, markMessagesAsReadBackEnd } from "../helpers";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
@@ -83,7 +85,7 @@ const Home = ({ user, logout }) => {
       setConversations((prev) =>
         prev.map((convo) => {
           if (convo.otherUser.id === recipientId) {
-            const convoCopy = JSON.parse(JSON.stringify(convo));
+            const convoCopy = { ...convo, messages: [ ...convo.messages ] };
             convoCopy.messages.push(message);
             convoCopy.latestMessageText = message.text;
             convoCopy.id = message.conversationId;
@@ -113,28 +115,69 @@ const Home = ({ user, logout }) => {
         setConversations((prev) =>
           prev.map((convo) => {
             if (convo.id === message.conversationId) {
-              const convoCopy = JSON.parse(JSON.stringify(convo));
-              convoCopy.messages.push(message);
+              const convoCopy = { ...convo };
+              const messagesCopy = [ ...convoCopy.messages ];
+              messagesCopy.push(message);
+              convoCopy.messages = messagesCopy;
               convoCopy.latestMessageText = message.text;
               return convoCopy;
             }
             return convo;
           }),
         );
+
+        // if conversation is open while message received
+        if (message.senderId === activeConversation) {
+          markMessagesAsReadBackEnd({ senderId: message.senderId, conversationId: message.conversationId });
+          markMessagesAsReadFrontEnd({
+            senderId: message.senderId,
+            conversationId: message.conversationId,
+            setConversations,
+          });
+
+          // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
+          socket.emit("messages-read", {
+            conversationId: message.conversationId,
+            recipientId: user.id,
+          });
+        }
       }
     },
-    [ setConversations ],
+    [ setConversations, activeConversation, socket, user.id ],
   );
 
-  const setActiveChat = (username) => {
-    setActiveConversation(username);
+  // when recipient informed you they've read your conversation messages, update your frontend to reflect that
+  const handleReadMessages = useCallback(
+    (data) => {
+      if (data.recipientId !== user.id) {
+        markMessagesAsReadFrontEnd({ senderId: user.id, conversationId: data.conversationId, setConversations });
+      }
+    },
+    [ user.id ],
+  );
+
+  const setActiveChat = async (otherUserId) => {
+    setActiveConversation(otherUserId);
+
+    const convo = conversations.find((convo) => convo.otherUser.id === otherUserId);
+    const senderId = otherUserId;
+    const conversationId = convo.id;
+
+    // Backend - mark all messages recieved by THIS user from active chat as read ('read = true')
+    markMessagesAsReadBackEnd({ senderId, conversationId });
+
+    // tell OTHER user that all messages from active chat were read by THIS user ('read = true')
+    socket.emit("messages-read", {
+      conversationId: convo.id,
+      userId: user.id,
+    });
   };
 
   const addOnlineUser = useCallback((id) => {
     setConversations((prev) =>
       prev.map((convo) => {
         if (convo.otherUser.id === id) {
-          const convoCopy = JSON.parse(JSON.stringify(convo));
+          const convoCopy = { ...convo };
           convoCopy.otherUser = { ...convoCopy.otherUser, online: true };
           return convoCopy;
         } else {
@@ -148,7 +191,7 @@ const Home = ({ user, logout }) => {
     setConversations((prev) =>
       prev.map((convo) => {
         if (convo.otherUser.id === id) {
-          const convoCopy = JSON.parse(JSON.stringify(convo));
+          const convoCopy = { ...convo };
           convoCopy.otherUser = { ...convoCopy.otherUser, online: false };
           return convoCopy;
         } else {
@@ -159,13 +202,13 @@ const Home = ({ user, logout }) => {
   }, []);
 
   // Lifecycle
-
   useEffect(
     () => {
       // Socket init
       socket.on("add-online-user", addOnlineUser);
       socket.on("remove-offline-user", removeOfflineUser);
       socket.on("new-message", addMessageToConversation);
+      socket.on("messages-read", handleReadMessages);
 
       return () => {
         // before the component is destroyed
@@ -173,9 +216,10 @@ const Home = ({ user, logout }) => {
         socket.off("add-online-user", addOnlineUser);
         socket.off("remove-offline-user", removeOfflineUser);
         socket.off("new-message", addMessageToConversation);
+        socket.off("messages-read", handleReadMessages);
       };
     },
-    [ addMessageToConversation, addOnlineUser, removeOfflineUser, socket ],
+    [ addMessageToConversation, addOnlineUser, removeOfflineUser, handleReadMessages, socket ],
   );
 
   useEffect(
@@ -228,6 +272,7 @@ const Home = ({ user, logout }) => {
           clearSearchedUsers={clearSearchedUsers}
           addSearchedUsers={addSearchedUsers}
           setActiveChat={setActiveChat}
+          activeConversation={activeConversation}
         />
         <ActiveChat
           activeConversation={activeConversation}
