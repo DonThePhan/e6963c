@@ -14,16 +14,18 @@ export const markMessagesAsReadFrontEnd = ({ senderId, conversationId, setConver
   setConversations((prevConvos) => {
     const convosCopy = prevConvos.map((convo) => {
       if (convo.id === conversationId) {
-        const convoCopy = JSON.parse(JSON.stringify(convo));
-        convoCopy.messages.forEach((message) => {
+        const convoCopy = { ...convo };
+        const messagesCopy = convoCopy.messages.map((message) => {
           if (senderId === message.senderId) {
-            message.read = true;
+            return { ...message, read: true };
           }
+          return message;
         });
+        convoCopy.messages = messagesCopy;
         return convoCopy;
-      } else {
-        return convo;
       }
+
+      return convo;
     });
 
     // only return new object if changes made. Else return prev
