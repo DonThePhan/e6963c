@@ -2,6 +2,7 @@ const db = require("./db");
 const { User } = require("./models");
 const Conversation = require("./models/conversation");
 const Message = require("./models/message");
+const ConversationUser = require("./models/conversation_user");
 
 async function seed() {
   await db.sync({ force: true });
@@ -127,6 +128,27 @@ async function seed() {
       username: "2",
       email: "2@email.com",
       password: "123456",
+    }),
+  ]);
+
+  // create conversation group
+  const groupConvo1 = await Conversation.create({
+    user1Id: thomas.id,
+    user2Id: santiago.id,
+  });
+
+  await Promise.all([
+    ConversationUser.create({
+      conversationId: groupConvo1.id,
+      userId: thomas.id,
+    }),
+    ConversationUser.create({
+      conversationId: groupConvo1.id,
+      userId: santiago.id,
+    }),
+    ConversationUser.create({
+      conversationId: groupConvo1.id,
+      userId: chiumbo.id,
     }),
   ]);
 

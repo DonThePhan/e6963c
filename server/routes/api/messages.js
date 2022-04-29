@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { Conversation, Message } = require("../../db/models");
+const { Conversation, Message, ConversationUser } = require("../../db/models");
 const onlineUsers = require("../../onlineUsers");
 const cors = require("cors");
 const { Op } = require("sequelize");
@@ -22,11 +22,22 @@ router.post("/", async (req, res, next) => {
     let conversation = await Conversation.findConversation(senderId, recipientId);
 
     if (!conversation) {
-      // create conversation
+      // create conversation -> conversations will start with 2 users. We will add more afterward
       conversation = await Conversation.create({
         user1Id: senderId,
         user2Id: recipientId,
       });
+
+      // create ConversationUser for each user (2 for new conversation)
+      ConversationUser.create({
+        conversationId: conversation.id,
+        userId: senderId,
+      });
+      ConversationUser.create({
+        conversationId: conversation.id,
+        userId: recipientId,
+      });
+
       if (onlineUsers.includes(sender.id)) {
         sender.online = true;
       }
@@ -55,12 +66,13 @@ router.patch("/read-status", cors(), async (req, res, next) => {
       return res.sendStatus(401);
     }
 
-    // confirm conversation exists & user has permission to access conversation
+    // confirm conversation exists between both users and it matches the conversationId requested
     const conversation = await Conversation.findConversation(userId, senderId);
     if (!conversation || conversation.id !== conversationId) {
       return res.sendStatus(403);
     }
 
+    // update message read-status'
     await Message.update(
       { read: true },
       {
